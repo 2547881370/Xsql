@@ -5,21 +5,6 @@ import { Xarticle } from "./entity/Xarticle"
 import { Ximage } from "./entity/Ximage"
 
 createConnection().then(async connection => {
-
-    // console.log("Inserting a new user into the database...");
-    // const user = new User();
-    // user.firstName = "Timber";
-    // user.lastName = "Saw";
-    // user.age = 25;
-    // await connection.manager.save(user);
-    // console.log("Saved a new user with id: " + user.id);
-    //
-    // console.log("Loading users from the database...");
-    // const users = await connection.manager.find(User);
-    // console.log("Loaded users: ", users);
-    //
-    // console.log("Here you can setup and run express/koa/any other framework.");
-
     // const xuser = new Xuser()
     // xuser.nick = '野生双马尾'
     // xuser.avatar = 'http://cdn.u1.huluxia.com/g4/M01/51/1B/rBAAdl9nJnyAIeSGAAFdnKqVtio427.jpg'
@@ -72,21 +57,29 @@ createConnection().then(async connection => {
     //
     // xarticle.images = [ximage1,ximage2]
     // xarticle.user = xuser
-
-
-    // 获取 repository
-    let xarticleRepository = connection.getRepository(Xuser);
-
-    // 保存photo的同时保存metadata
+    //
+    //
+    // // 获取 repository
+    // let xarticleRepository = connection.getRepository(Xarticle);
+    //
     // await xarticleRepository.save(xarticle);
 
     // const obj = await xarticleRepository.find({ relations: ["articles"] , });
     // console.log(JSON.stringify(obj))
 
+    // const obj = await xarticleRepository.find({gender : 1241});
 
-    const obj = await xarticleRepository.find({gender : 1241});
-    console.log(JSON.stringify(obj))
     // await xarticleRepository.remove(obj);
+
+
+    let xarticleRepository = connection.getRepository(Ximage);
+    const obj = await xarticleRepository.find({ relations: ["article"] , });
+
+    // 先设置外键约束检查关闭
+    await xarticleRepository.query('SET foreign_key_checks = 0;')
+    await xarticleRepository.remove(obj)
+    // 开启外键约束检查，以保持表结构完整性
+    await xarticleRepository.query('SET foreign_key_checks = 1;')
 
 
 }).catch(error => console.log(error));
